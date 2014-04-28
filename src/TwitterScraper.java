@@ -53,7 +53,7 @@ public class TwitterScraper {
 	                result = twitter.search(query);
 	                List<Status> tweets = result.getTweets();
 	                for (Status tweet : tweets) {
-	                    out.println("@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+	                    out.print(tweet.getText() + " ");
 	                }
 	            } while ((query = result.nextQuery()) != null);	 
 	            
