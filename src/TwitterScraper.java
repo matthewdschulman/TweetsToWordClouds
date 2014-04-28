@@ -40,9 +40,9 @@ public class TwitterScraper {
 	        	String firstTerm = userQueries.getFirst();	                     
 	            try {
 	                //create an output file	         
-	            	System.out.println("Here 1");
 	                File logFile = new File(firstTerm.replace(" ", ""));
-	                out = new PrintWriter(new FileWriter(logFile)); 	                             
+	                out = new PrintWriter(new FileWriter(logFile)); 	
+	                //test that out is working
 		        } catch (Exception e) {
 		            e.printStackTrace();
 		        }
