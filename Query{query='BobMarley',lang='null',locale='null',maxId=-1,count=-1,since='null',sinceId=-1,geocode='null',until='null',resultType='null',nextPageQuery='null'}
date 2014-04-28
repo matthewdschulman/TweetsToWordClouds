@@ -1,0 +1,4 @@
+Failed to search tweets: 429:Returned in API v1.1 when a request cannot be served due to the application's rate limit having been exhausted for the resource. See Rate Limiting in API v1.1.(https://dev.twitter.com/docs/rate-limiting/1.1)
+message - Rate limit exceeded
+code - 88
+
