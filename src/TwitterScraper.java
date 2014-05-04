@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -93,24 +94,18 @@ public class TwitterScraper {
 	            System.exit(-1);
 	        }
 	        outText.close();
-	        //sorted_map.putAll(wordFreq);
-	        //print hashmap to outHash file
-	        //Iterator iterator = sorted_map.keySet().iterator();  
-	        
-	        /*while (iterator.hasNext()) {  
-	           String key = iterator.next().toString();  
-	           String value = sorted_map.get(key).toString();  	           
-	           outHash.println(key + ", " + value);  
-	        }  */
 	        LinkedHashMap<String, Integer> wordFreqSorted = sortHashMapByValues(wordFreq);
 	        
-	        List<String> keyList = new ArrayList<String>(wordFreqSorted.keySet());
-		    for ( int i = wordFreqSorted.size() - 1; i >= 0 ; i-- ) {
-		    	String key = keyList.get(i);
-		        String value = wordFreqSorted.get(key).toString();  	           
-		        outHash.println(key + ", " + value);   
-		    }	        
 	        
+	        List<String> keyList = new ArrayList<String>(wordFreqSorted.keySet());
+	        List<String> wordsToExclude = WordsToExclude.createList();
+		    for ( int i = keyList.size() - 1; i >= 0 ; i-- ) {
+		    	String key = keyList.get(i);
+		    	if (!wordsToExclude.contains(key) && key.length() > 3) {
+			        String value = wordFreqSorted.get(key).toString();  	           
+			        outHash.println(key + ", " + value);   
+		    	}
+		    }        
 	        outHash.close();
         }
     Reset.reset();    
