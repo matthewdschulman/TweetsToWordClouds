@@ -5,12 +5,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 
 public class TwitterScraper {
@@ -40,7 +41,7 @@ public class TwitterScraper {
         	/*Map<String, Integer> wordFreq = new TreeMap<String, Integer>();
         	ValueComparator comparator =  new ValueComparator(wordFreq);
             TreeMap<String, Integer> sorted_map = new TreeMap<String,Integer>(comparator);*/
-        	HashMap<String, Integer> wordFreq = new HashMap<String, Integer>();
+        	LinkedHashMap<String, Integer> wordFreq = new LinkedHashMap<String, Integer>();
         	numOfQueries--;
         	if (firstTimeThrough) {
         		System.out.print("Please wait one moment...");
@@ -101,29 +102,48 @@ public class TwitterScraper {
 	           String value = sorted_map.get(key).toString();  	           
 	           outHash.println(key + ", " + value);  
 	        }  */
-	        Iterator<String> iterator = wordFreq.keySet().iterator();
-	        while (iterator.hasNext()) {
-	        	String key = iterator.next().toString();  
-		        String value = wordFreq.get(key).toString();  	           
-		        outHash.println(key + ", " + value);  
-	        }
+	        LinkedHashMap<String, Integer> wordFreqSorted = sortHashMapByValues(wordFreq);
+	        
+	        List<String> keyList = new ArrayList<String>(wordFreqSorted.keySet());
+		    for ( int i = wordFreqSorted.size() - 1; i >= 0 ; i-- ) {
+		    	String key = keyList.get(i);
+		        String value = wordFreqSorted.get(key).toString();  	           
+		        outHash.println(key + ", " + value);   
+		    }	        
+	        
 	        outHash.close();
         }
     Reset.reset();    
     }
-}
 
-class ValueComparator implements Comparator<String> {
-    Map<String, Integer> base;
-    public ValueComparator(Map<String, Integer> base) {
-        this.base = base;
-    }
-    // Note: this comparator imposes orderings that are inconsistent with equals.    
-    public int compare(String a, String b) {
-        if (base.get(a) >= base.get(b)) {
-            return -1;
-        } else {
-            return 1;
-        } // returning 0 would merge keys
-    }
+
+    public static LinkedHashMap<String, Integer> sortHashMapByValues(HashMap<String, Integer> passedMap) {
+	   List<String> mapKeys = new ArrayList<String>(passedMap.keySet());
+	   List<Integer> mapValues = new ArrayList<Integer>(passedMap.values());
+	   Collections.sort(mapValues);
+	   Collections.sort(mapKeys);
+
+	   LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+
+	   Iterator<Integer> valueIt = mapValues.iterator();
+	   while (valueIt.hasNext()) {
+	       Object val = valueIt.next();
+	       Iterator<String> keyIt = mapKeys.iterator();
+
+	       while (keyIt.hasNext()) {
+	           Object key = keyIt.next();
+	           String comp1 = passedMap.get(key).toString();
+	           String comp2 = val.toString();
+
+	           if (comp1.equals(comp2)){
+	               passedMap.remove(key);
+	               mapKeys.remove(key);
+	               sortedMap.put((String)key, (Integer)val);
+	               break;
+	           }
+	       }
+	   }
+	   return sortedMap;
+	}
+    
 }
