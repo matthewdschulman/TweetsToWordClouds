@@ -40,7 +40,7 @@ public class TwitterScraper {
         	/*Map<String, Integer> wordFreq = new TreeMap<String, Integer>();
         	ValueComparator comparator =  new ValueComparator(wordFreq);
             TreeMap<String, Integer> sorted_map = new TreeMap<String,Integer>(comparator);*/
-        	LinkedHashMap<String, Integer> wordFreq = new LinkedHashMap<String, Integer>();
+        	HashMap<String, Integer> wordFreq = new HashMap<String, Integer>();
         	numOfQueries--;
         	if (firstTimeThrough) {
         		System.out.print("Please wait one moment...");
