@@ -38,7 +38,6 @@ public class WordCloud {
   
   public static void main(String[] curHash, String cloudName)
   { 
-	  	System.out.println(curHash.toString());
 	    // new random number created within the amount of fonts avaliable
 	    int num = r.nextInt((fonts.length)+1);
 	    // get the string name of the randomly selected font

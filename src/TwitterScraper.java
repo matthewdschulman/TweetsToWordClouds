@@ -56,7 +56,6 @@ public class TwitterScraper {
         	PrintWriter outHash = null;
 	        try {
 	        		curTerm = userQueries.remove();
-	        		System.out.println("curTerm = "+curTerm);
 	            try {
 	                //create an output file	         
 	                File logFileText = new File(curTerm.replace(" ", ""));
@@ -82,7 +81,6 @@ public class TwitterScraper {
 	                	//add substrings to hashmap
 	                	for (String subWord : parts) {
 	                		if (!wordsToExclude.contains(subWord) && subWord.length() > 3) {
-	                			System.out.println(subWord);
 	                			fullString += (subWord + " ");
 		                		if (wordFreq.containsKey(subWord)) {
 		                			//increase value by one
