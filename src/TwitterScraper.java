@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
 public class TwitterScraper {
@@ -25,6 +26,11 @@ public class TwitterScraper {
     	int twitterSearchCounter = 0;
         System.out.println("Welcome to the Word Cloud Generator!");
         LinkedList<String> userQueries = AskUser.getQueries();
+        LinkedList<String> forIRAnalysis = new LinkedList<String>();
+        Iterator<String> iter = userQueries.iterator();
+        while (iter.hasNext()) {
+        	forIRAnalysis.add(iter.next());
+        }
         int numOfQueries = userQueries.size();
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
@@ -37,11 +43,9 @@ public class TwitterScraper {
         //iterates through every one of the user's search terms
         String curTerm = "";
         boolean firstTimeThrough = true;
+        List<String> wordsToExclude = WordsToExclude.createList();
         while (numOfQueries > 0) {
-        	//create hashmap for word frequencies
-        	/*Map<String, Integer> wordFreq = new TreeMap<String, Integer>();
-        	ValueComparator comparator =  new ValueComparator(wordFreq);
-            TreeMap<String, Integer> sorted_map = new TreeMap<String,Integer>(comparator);*/
+        	String fullString = "";
         	LinkedHashMap<String, Integer> wordFreq = new LinkedHashMap<String, Integer>();
         	numOfQueries--;
         	if (firstTimeThrough) {
@@ -52,6 +56,7 @@ public class TwitterScraper {
         	PrintWriter outHash = null;
 	        try {
 	        		curTerm = userQueries.remove();
+	        		System.out.println("curTerm = "+curTerm);
 	            try {
 	                //create an output file	         
 	                File logFileText = new File(curTerm.replace(" ", ""));
@@ -73,16 +78,20 @@ public class TwitterScraper {
 	                for (Status tweet : tweets) {
 	                	String curTweet = tweet.getText().toLowerCase() + " ";
 	                	outText.print(curTweet);
-	                	String[] parts = curTweet.split(" ");
+	                	String[] parts = curTweet.replace(",","").split(" ");
 	                	//add substrings to hashmap
 	                	for (String subWord : parts) {
-	                		if (wordFreq.containsKey(subWord)) {
-	                			//increase value by one
-	                			wordFreq.put(subWord, wordFreq.get(subWord) + 1);
-	                		}
-	                		else {
-	                			//first occurence of the word
-	                			wordFreq.put(subWord, 1);
+	                		if (!wordsToExclude.contains(subWord) && subWord.length() > 3) {
+	                			System.out.println(subWord);
+	                			fullString += (subWord + " ");
+		                		if (wordFreq.containsKey(subWord)) {
+		                			//increase value by one
+		                			wordFreq.put(subWord, wordFreq.get(subWord) + 1);
+		                		}
+		                		else {
+		                			//first occurence of the word
+		                			wordFreq.put(subWord, 1);
+		                		}
 	                		}
 	                	}	                    
 	                }
@@ -95,24 +104,34 @@ public class TwitterScraper {
 	        }
 	        outText.close();
 	        LinkedHashMap<String, Integer> wordFreqSorted = sortHashMapByValues(wordFreq);
-	        
-	        
+
 	        List<String> keyList = new ArrayList<String>(wordFreqSorted.keySet());
-	        List<String> wordsToExclude = WordsToExclude.createList();
+	        
 		    for ( int i = keyList.size() - 1; i >= 0 ; i-- ) {
 		    	String key = keyList.get(i);
 		    	if (!wordsToExclude.contains(key) && key.length() > 3) {
 			        String value = wordFreqSorted.get(key).toString();  	           
 			        outHash.println(key + ", " + value);   
 		    	}
+		    	else {
+		    		wordFreqSorted.remove(key);
+		    	}
 		    }        
 	        outHash.close();
+	        //String[] toPassToWordCloud = createStringArrFromHash(wordFreqSorted);
+	        //WordCloud.main(toPassToWordCloud, curTerm);
+	        WordCloud.main(fullString.split(" "), curTerm);
         }
-    Reset.reset();    
+    if (forIRAnalysis.size() > 1) {
+    	VectorSpaceModelTester.main(forIRAnalysis);   
+    }
+    else {
+    	System.out.println("No comparative word frequency analysis conducted, because you only entered 1 search term.");
+    }
     }
 
-
-    public static LinkedHashMap<String, Integer> sortHashMapByValues(HashMap<String, Integer> passedMap) {
+   
+	public static LinkedHashMap<String, Integer> sortHashMapByValues(HashMap<String, Integer> passedMap) {
 	   List<String> mapKeys = new ArrayList<String>(passedMap.keySet());
 	   List<Integer> mapValues = new ArrayList<Integer>(passedMap.values());
 	   Collections.sort(mapValues);
