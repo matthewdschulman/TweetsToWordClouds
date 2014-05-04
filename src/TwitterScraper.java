@@ -13,18 +13,22 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class TwitterScraper {
     /**
      * Usage: java twitter4j.examples.search.SearchTweets [query]
      *
-     * @param args search query
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException {
+    	int whileCounter = 0;
+    	int getFirstCounter = 0;
+    	int twitterSearchCounter = 0;
         System.out.println("Welcome to the Word Cloud Generator!");
         LinkedList<String> userQueries = AskUser.getQueries();
+        int numOfQueries = userQueries.size();
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
           .setOAuthConsumerKey("BUO4hXJ8rtdgVLMXr68e5rRTg")
@@ -34,28 +38,39 @@ public class TwitterScraper {
         TwitterFactory tf = new TwitterFactory(cb.build());
         Twitter twitter = tf.getInstance();
         //iterates through every one of the user's search terms
-        while (userQueries != null) {
+        String curTerm = "";
+        boolean firstTimeThrough = true;
+        while (numOfQueries > 0) {
+        	numOfQueries--;
+        	if (firstTimeThrough) {
+        		System.out.print("Please wait one moment...");
+        	}
+        	firstTimeThrough = false;
+        	whileCounter++;
         	PrintWriter out = null;
 	        try {
-	        	String firstTerm = userQueries.getFirst();	                     
+	        		curTerm = userQueries.remove();
+	        		getFirstCounter++;
 	            try {
 	                //create an output file	         
-	                File logFile = new File(firstTerm.replace(" ", ""));
+	                File logFile = new File(curTerm.replace(" ", ""));
 	                out = new PrintWriter(new FileWriter(logFile)); 	
 	                //test that out is working
 		        } catch (Exception e) {
 		            e.printStackTrace();
 		        }
 	            
-	            Query query = new Query(firstTerm);	            
+	            Query query = new Query(curTerm);	            
 	            QueryResult result;	   
 	            do {
 	                result = twitter.search(query);
+	                System.out.print(".");
+	                twitterSearchCounter++;
 	                List<Status> tweets = result.getTweets();
 	                for (Status tweet : tweets) {
 	                    out.print(tweet.getText() + " ");
 	                }
-	            } while ((query = result.nextQuery()) != null);	 
+	            } while ((query = result.nextQuery()) != null && twitterSearchCounter < 10);	 
 	            
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
@@ -63,7 +78,7 @@ public class TwitterScraper {
 	            System.exit(-1);
 	        }
 	        out.close();
-	        userQueries.remove();
         }
+    Reset.reset();    
     }
 }
