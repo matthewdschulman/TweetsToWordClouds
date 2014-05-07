@@ -1,0 +1,7 @@
+TwitterScraper let's users compare the Twitter pulse of different search terms.
+Users are prompted to enter search terms. Examples include Barack Obama, Paul Ryan, Princeton, Harvard, Yankees, Red Sox, etc. We recommend entering somewhat related search terms that will provide insightful points for comparison.
+TwitterScraper then uses Twitter's API to scrape all recent tweets made that include the search terms that the user selected. An output txt file is created for each search term that includes all of the raw text of the tweets.
+A linked hash map is then created that, in decreasing order, states the frequencies of high-quality (i.e. more than three letters) words.
+A word cloud then pops up for each search term. Note that in this version of the app, the word clouds for latter search terms have diminishing quality. This is because Twitter limits the number of GET requests in a short period of time, and the amount of text in latter search queries is less than in the first search term. This is a bug that will be addressed in future versions of the app.
+Then, a tf-idf comparison is made for every single subset of two search terms that the user made. The user can then analyze which set of two words are the most and least similar. Perhaps Paul Ryan and Mitt Romney have pulses more similar than Paul Ryan and Barack Obama, or perhaps Brown and Wesleyan have puleses more similar than Brown and the University of Pennsylvania. It's up to the user to determine which analysis to do in live time.
+Happy Scraping.
